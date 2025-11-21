@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>OSINT Deanon Panel (Mock)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #05060a;
+      --bg-elevated: #0b0d14;
+      --bg-elevated-2: #111525;
+      --border-subtle: #1b2033;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --accent-danger: #f97373;
+      --accent-warning: #eab308;
+      --accent-success: #22c55e;
+      --text-main: #e5e7eb;
+      --text-muted: #6b7280;
+      --text-soft: #4b5563;
+      --input-bg: #050814;
+      --input-border: #1f2933;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.7);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-pill: 999px;
+      --transition-fast: 0.18s ease-out;
+      --transition-med: 0.28s ease-out;
+      --font-mono: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at top, #0b1020 0, #020308 42%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      width: 100%;
+      max-width: 1440px;
+      margin: 16px auto;
+      gap: 14px;
+      padding: 0 14px 6px;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      background: linear-gradient(150deg, #050814 0, #05060a 45%, #020308 100%);
+      border-radius: 20px;
+      padding: 16px 14px 14px;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.09) 0, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.06) 0, transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .sidebar-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      height: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 0 0, #1d4ed8, #0f172a);
+      box-shadow:
+        0 0 18px rgba(59, 130, 246, 0.6),
+        0 0 45px rgba(37, 99, 235, 0.35);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      color: #eff6ff;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+
+    .pill-status {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 197, 94, 0.55);
+      background: linear-gradient(
+        135deg,
+        rgba(22, 163, 74, 0.18),
+        rgba(5, 46, 22, 0.7)
+      );
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #bbf7d0;
+      white-space: nowrap;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .pill-label-main {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .pill-label-sub {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.6;
+    }
+
+    .nav-section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+      padding-left: 4px;
+    }
+
+    .nav-main {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: -4px;
+    }
+
+    .nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 7px 9px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background var(--transition-fast), color var(--transition-fast),
+        border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .nav-item::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid transparent;
+      background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.36), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      pointer-events: none;
+    }
+
+    .nav-item span.nav-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.95);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .nav-item span.nav-label-main {
+      font-size: 13px;
+    }
+
+    .nav-item span.nav-label-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-left: auto;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .nav-item:hover {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(55, 65, 81, 0.8);
+      color: #e5e7eb;
+      transform: translateY(-1px);
+    }
+
+    .nav-item:hover::before {
+      opacity: 0.7;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.98),
+        rgba(30, 64, 175, 0.9)
+      );
+      border-color: rgba(59, 130, 246, 0.9);
+      color: #e5edff;
+      box-shadow:
+        0 0 18px rgba(37, 99, 235, 0.9),
+        0 0 40px rgba(30, 64, 175, 0.8);
+    }
+
+    .nav-item.active span.nav-icon {
+      background: rgba(15, 23, 42, 0.9);
+      color: #bfdbfe;
+    }
+
+    .nav-item.active span.nav-label-sub {
+      color: #93c5fd;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tag-soft {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      color: #9ca3af;
+      border: 1px solid rgba(55, 65, 81, 0.8);
+      font-size: 11px;
+    }
+
+    .footer-mono {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    /* MAIN */
+
+    .main {
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 22px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      backdrop-filter: blur(18px) saturate(1.4);
+    }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mh-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mh-title {
+      font-size: 18px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .mh-sub {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .mh-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mh-pill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      font-size: 11px;
+      color: #9ca3af;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .mh-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .mh-clock {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #9ca3af;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    /* LAYOUT GRID */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top, #020617 0, #020617 32%, #020617 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 11px 12px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.2), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.09), transparent 50%);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .panel-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .panel-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .tag {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      color: #9ca3af;
+      background: rgba(15, 23, 42, 0.96);
+      white-space: nowrap;
+    }
+
+    .tag-accent {
+      border-color: rgba(59, 130, 246, 0.95);
+      color: #bfdbfe;
+      background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.96),
+        rgba(30, 64, 175, 0.9)
+      );
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.85);
+    }
+
+    /* FORM */
+
+    .target-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tf-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .field-input,
+    .field-select {
+      background: radial-gradient(circle at top, #020617 0, #020617 32%, #020617 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--input-border);
+      padding: 7px 9px;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast),
+        transform var(--transition-fast);
+      font-family: var(--font-mono);
+    }
+
+    .field-input::placeholder {
+      color: #4b5563;
+    }
+
+    .field-input:focus,
+    .field-select:focus {
+      border-color: rgba(59, 130, 246, 0.95);
+      background: #020617;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.9),
+        0 0 18px rgba(37, 99, 235, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .field-select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%),
+        linear-gradient(135deg, #6b7280 50%, transparent 50%);
+      background-position: calc(100% - 16px) 11px, calc(100% - 12px) 11px;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 28px;
+    }
+
+    .btn-run {
+      align-self: flex-end;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(37, 99, 235, 0.9);
+      background: radial-gradient(circle at 0 0, #1d4ed8, #020617);
+      color: #eff6ff;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow:
+        0 0 20px rgba(37, 99, 235, 0.9),
+        0 0 40px rgba(30, 64, 175, 0.85);
+      transition: transform var(--transition-med), box-shadow var(--transition-med),
+        background var(--transition-med);
+      white-space: nowrap;
+    }
+
+    .btn-run-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(191, 219, 254, 0.95);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .btn-run:hover {
+      transform: translateY(-1px) translateX(0.5px);
+      box-shadow:
+        0 0 22px rgba(59, 130, 246, 0.95),
+        0 0 50px rgba(37, 99, 235, 0.9);
+      background: radial-gradient(circle at 0 0, #2563eb, #020617);
+    }
+
+    .btn-run:active {
+      transform: translateY(0);
+      box-shadow:
+        0 0 12px rgba(37, 99, 235, 0.8),
+        0 0 26px rgba(30, 64, 175, 0.9);
+    }
+
+    .tf-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .tf-meta-row span {
+      font-family: var(--font-mono);
+      color: #6b7280;
+    }
+
+    /* TABS + RESULTS */
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-top: 5px;
+    }
+
+    .tab {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: rgba(15, 23, 42, 0.96);
+      color: #9ca3af;
+      cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast),
+        border-color var(--transition-fast), transform var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      background: rgba(17, 24, 39, 0.96);
+      transform: translateY(-1px);
+    }
+
+    .tab.active {
+      border-color: rgba(59, 130, 246, 0.95);
+      color: #bfdbfe;
+      background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.98),
+        rgba(37, 99, 235, 0.98)
+      );
+      box-shadow: 0 0 14px rgba(37, 99, 235, 0.9);
+    }
+
+    .results-shell {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: radial-gradient(circle at top, #020617 0, #020617 38%, #020617 100%);
+      padding: 8px 9px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      height: 210px;
+      overflow: hidden;
+    }
+
+    .results-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-soft {
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .badge-risk {
+      border-color: rgba(248, 113, 113, 0.95);
+      color: #fecaca;
+      background: linear-gradient(
+        135deg,
+        rgba(127, 29, 29, 0.9),
+        rgba(190, 24, 93, 0.85)
+      );
+      box-shadow: 0 0 18px rgba(248, 113, 113, 0.85);
+    }
+
+    .results-body {
+      font-size: 12px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 7px 8px;
+      overflow: auto;
+      font-family: var(--font-mono);
+      color: #d1d5db;
+    }
+
+    .results-body-line {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      padding: 1px 0;
+    }
+
+    .results-body-line span.key {
+      color: #6b7280;
+    }
+
+    .results-body-line span.value {
+      color: #e5e7eb;
+    }
+
+    .results-body-line span.value-accent {
+      color: #bfdbfe;
+    }
+
+    .results-body-line span.value-danger {
+      color: #fecaca;
+    }
+
+    /* RIGHT PANEL: LOGS + STATUS */
+
+    .logs-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .log-output {
+      flex: 1;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+      padding: 7px 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #9ca3af;
+      overflow: auto;
+    }
+
+    .log-line {
+      padding: 1px 0;
+      white-space: nowrap;
+    }
+
+    .log-time {
+      color: #4b5563;
+      margin-right: 8px;
+    }
+
+    .log-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 46px;
+      padding: 1px 6px;
+      margin-right: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .log-tag-info {
+      border-color: rgba(59, 130, 246, 0.95);
+      color: #bfdbfe;
+    }
+
+    .log-tag-ok {
+      border-color: rgba(22, 163, 74, 0.95);
+      color: #bbf7d0;
+    }
+
+    .log-tag-warn {
+      border-color: rgba(234, 179, 8, 0.95);
+      color: #facc15;
+    }
+
+    .log-tag-err {
+      border-color: rgba(248, 113, 113, 0.95);
+      color: #fecaca;
+    }
+
+    .log-text {
+      color: #e5e7eb;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      font-size: 11px;
+    }
+
+    .status-card {
+      border-radius: 10px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.95);
+      padding: 6px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .status-label {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 10px;
+    }
+
+    .status-value {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    .status-bar {
+      margin-top: 2px;
+      position: relative;
+      height: 4px;
+      border-radius: 999px;
+      background: #020617;
+      overflow: hidden;
+    }
+
+    .status-bar > div {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22c55e, #a3e635);
+      transform-origin: left;
+      transform: scaleX(0.6);
+    }
+
+    .status-bar.warning > div {
+      background: linear-gradient(90deg, #eab308, #f97316);
+      transform: scaleX(0.4);
+    }
+
+    .status-bar.danger > div {
+      background: linear-gradient(90deg, #f97373, #fb7185);
+      transform: scaleX(0.82);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 992px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .sidebar {
+        order: 2;
+      }
+      .main {
+        order: 1;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .main-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .tf-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .btn-run {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+        <header class="brand">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="brand-mark">OS</div>
+            <div class="brand-text">
+              <div class="brand-title">OSINT NODE</div>
+              <div class="brand-sub">DEANON / SIGNALS</div>
+            </div>
+          </div>
+          <div class="pill-status">
+            <span class="pill-dot"></span>
+            <span class="pill-label-main">live</span>
+            <span class="pill-label-sub">mock ui</span>
+          </div>
+        </header>
+
+        <div>
+          <div class="nav-section-label">workspace</div>
+          <nav class="nav-main">
+            <div class="nav-item active">
+              <span class="nav-icon">◆</span>
+              <span class="nav-label-main">Deanon surface</span>
+              <span class="nav-label-sub">scan</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">⌘</span>
+              <span class="nav-label-main">Graph links</span>
+              <span class="nav-label-sub">map</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">↯</span>
+              <span class="nav-label-main">Signals stream</span>
+              <span class="nav-label-sub">live</span>
+            </div>
+          </nav>
+        </div>
+
+        <div>
+          <div class="nav-section-label">modules</div>
+          <nav class="nav-main">
+            <div class="nav-item">
+              <span class="nav-icon">＠</span>
+              <span class="nav-label-main">Usernames</span>
+              <span class="nav-label-sub">id</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">☏</span>
+              <span class="nav-label-main">Phones</span>
+              <span class="nav-label-sub">meta</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">✉</span>
+              <span class="nav-label-main">Emails</span>
+              <span class="nav-label-sub">leaks</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">◎</span>
+              <span class="nav-label-main">IP / Infra</span>
+              <span class="nav-label-sub">net</span>
+            </div>
+          </nav>
+        </div>
+
+        <footer class="sidebar-footer">
+          <div class="footer-row">
+            <span class="footer-mono">session: mock-local</span>
+            <span class="tag-soft">no external calls</span>
+          </div>
+          <div class="footer-row">
+            <span class="footer-mono">build: ui‑only / demo</span>
+            <span class="footer-mono">v0.1.0‑shadow</span>
+          </div>
+        </footer>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="main-header">
+        <div class="mh-left">
+          <div class="mh-title">Target surface deanon</div>
+          <div class="mh-sub">
+            Локальный макет интерфейса под OSINT / деанон‑панель, без реальных запросов.
+          </div>
+        </div>
+        <div class="mh-right">
+          <div class="mh-pill">
+            <span class="mh-pill-dot"></span>
+            <span>SIMULATED ONLY</span>
+          </div>
+          <div class="mh-clock" id="clock">--:--:--</div>
+        </div>
+      </header>
+
+      <section class="main-grid">
+        <!-- LEFT: FORM + RESULTS -->
+        <section class="panel">
+          <div class="panel-inner">
+            <header class="panel-header">
+              <div class="panel-title-block">
+                <div class="panel-title">Target fingerprint</div>
+                <div class="panel-sub">
+                  Укажи цель для симуляции анализа: ник / почта / телефон и источник.
+                </div>
+              </div>
+              <div class="panel-tags">
+                <span class="tag tag-accent">realtime mock</span>
+                <span class="tag">local‑only</span>
+              </div>
+            </header>
+
+            <div class="target-form">
+              <div class="tf-row">
+                <div class="field">
+                  <label class="field-label" for="target-input">target identifier</label>
+                  <input
+                    id="target-input"
+                    class="field-input"
+                    type="text"
+                    placeholder="@nickname / email / phone"
+                  />
+                </div>
+                <div class="field">
+                  <label class="field-label" for="source-select">primary source</label>
+                  <select id="source-select" class="field-select">
+                    <option value="username">Username / Handle</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Phone</option>
+                    <option value="ip">IP / Host</option>
+                    <option value="custom">Custom tag</option>
+                  </select>
+                </div>
+                <button id="run-btn" class="btn-run" type="button">
+                  <span class="btn-run-icon">▶</span>
+                  <span>Launch sweep</span>
+                </button>
+              </div>
+              <div class="tf-meta-row">
+                <span>engine: local‑mock / 0 external modules</span>
+                <span>latency: pseudo random 120‑900ms</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="tabs">
+                <button class="tab active" type="button" data-tab="summary">
+                  summary
+                </button>
+                <button class="tab" type="button" data-tab="identifiers">
+                  identifiers
+                </button>
+                <button class="tab" type="button" data-tab="risk">
+                  risk surface
+                </button>
+              </div>
+
+              <div class="results-shell">
+                <div class="results-header-row">
+                  <span id="results-label">summary view / idle</span>
+                  <span class="badge-soft" id="results-meta">records: 0</span>
+                </div>
+                <div class="results-body" id="results-body">
+                  <div class="results-body-line">
+                    <span class="key">hint › </span>
+                    <span class="value">
+                      Введи идентификатор цели и нажми <span class="value-accent">Launch sweep</span> —
+                      система сымитирует вывод OSINT‑панели.
+                    </span>
+                  </div>
+                  <div class="results-body-line">
+                    <span class="key">note › </span>
+                    <span class="value">
+                      Это только UI‑макет: никакой реальный деанон или сетевые запросы не выполняются.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: LOGS + STATUS -->
+        <section class="panel">
+          <div class="panel-inner">
+            <header class="panel-header">
+              <div class="panel-title-block">
+                <div class="panel-title">Engine / Log bus</div>
+                <div class="panel-sub">
+                  Поток событий симулированного движка: запросы, статус, псевдо‑ошибки.
+                </div>
+              </div>
+              <div class="panel-tags">
+                <span class="tag">console‑like</span>
+                <span class="tag">mono output</span>
+              </div>
+            </header>
+
+            <div class="logs-shell">
+              <div id="log-output" class="log-output">
+                <div class="log-line">
+                  <span class="log-time">[00:00:00]</span>
+                  <span class="log-tag log-tag-info">INIT</span>
+                  <span class="log-text">
+                    bootstrap: ui‑only deanon / OSINT surface ready.
+                  </span>
+                </div>
+                <div class="log-line">
+                  <span class="log-time">[00:00:00]</span>
+                  <span class="log-tag log-tag-ok">OK</span>
+                  <span class="log-text">
+                    no external network modules attached (safe mock mode).
+                  </span>
+                </div>
+              </div>
+
+              <div class="status-row">
+                <div class="status-card">
+                  <div class="status-label">queue depth</div>
+                  <div class="status-value" id="status-queue">0 tasks</div>
+                  <div class="status-bar" id="status-queue-bar">
+                    <div></div>
+                  </div>
+                </div>
+                <div class="status-card">
+                  <div class="status-label">mock load</div>
+                  <div class="status-value" id="status-load">0.12</div>
+                  <div class="status-bar warning" id="status-load-bar">
+                    <div></div>
+                  </div>
+                </div>
+                <div class="status-card">
+                  <div class="status-label">ui risk level</div>
+                  <div class="status-value" id="status-risk">low</div>
+                  <div class="status-bar danger" id="status-risk-bar">
+                    <div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Clock
+    function updateClock() {
+      const el = document.getElementById("clock");
+      if (!el) return;
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      el.textContent =
+        pad(now.getHours()) +
+        ":" +
+        pad(now.getMinutes()) +
+        ":" +
+        pad(now.getSeconds());
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const resultsBody = document.getElementById("results-body");
+    const resultsLabel = document.getElementById("results-label");
+    const resultsMeta = document.getElementById("results-meta");
+    const logOutput = document.getElementById("log-output");
+    const runBtn = document.getElementById("run-btn");
+    const targetInput = document.getElementById("target-input");
+    const sourceSelect = document.getElementById("source-select");
+
+    function pushLog(level, text) {
+      const line = document.createElement("div");
+      line.className = "log-line";
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const ts =
+        "[" +
+        pad(now.getHours()) +
+        ":" +
+        pad(now.getMinutes()) +
+        ":" +
+        pad(now.getSeconds()) +
+        "]";
+
+      const time = document.createElement("span");
+      time.className = "log-time";
+      time.textContent = ts;
+
+      const tag = document.createElement("span");
+      tag.className = "log-tag";
+      if (level === "info") tag.classList.add("log-tag-info");
+      if (level === "ok") tag.classList.add("log-tag-ok");
+      if (level === "warn") tag.classList.add("log-tag-warn");
+      if (level === "err") tag.classList.add("log-tag-err");
+      tag.textContent =
+        level.toUpperCase().padEnd(3, " ").slice(0, 4).trim() || "LOG";
+
+      const textSpan = document.createElement("span");
+      textSpan.className = "log-text";
+      textSpan.textContent = " " + text;
+
+      line.appendChild(time);
+      line.appendChild(tag);
+      line.appendChild(textSpan);
+
+      logOutput.appendChild(line);
+      logOutput.scrollTop = logOutput.scrollHeight;
+    }
+
+    function setStatus(queue, load, riskLabel) {
+      const qEl = document.getElementById("status-queue");
+      const qBar = document.getElementById("status-queue-bar").firstElementChild;
+      const lEl = document.getElementById("status-load");
+      const lBar = document.getElementById("status-load-bar").firstElementChild;
+      const rEl = document.getElementById("status-risk");
+
+      qEl.textContent = queue + " tasks";
+      const qNorm = Math.max(0, Math.min(queue / 6, 1));
+      qBar.style.transform = "scaleX(" + (0.2 + 0.7 * qNorm).toFixed(2) + ")";
+
+      lEl.textContent = load.toFixed(2);
+      const lNorm = Math.max(0, Math.min(load / 1.5, 1));
+      lBar.style.transform = "scaleX(" + (0.2 + 0.7 * lNorm).toFixed(2) + ")";
+
+      rEl.textContent = riskLabel;
+    }
+
+    function renderResults(target, source, tab) {
+      resultsBody.innerHTML = "";
+      const lines = [];
+
+      function line(key, value, type) {
+        const row = document.createElement("div");
+        row.className = "results-body-line";
+
+        const keySpan = document.createElement("span");
+        keySpan.className = "key";
+        keySpan.textContent = key + " › ";
+
+        const valueSpan = document.createElement("span");
+        valueSpan.className = "value";
+        if (type === "accent") valueSpan.classList.add("value-accent");
+        if (type === "danger") valueSpan.classList.add("value-danger");
+        valueSpan.textContent = value;
+
+        row.appendChild(keySpan);
+        row.appendChild(valueSpan);
+        resultsBody.appendChild(row);
+      }
+
+      if (!target) {
+        line("hint", "целевой идентификатор пуст, введите данные и повторите.", "danger");
+        resultsMeta.textContent = "records: 0";
+        return;
+      }
+
+      const srcLabel = {
+        username: "username / handle",
+        email: "email",
+        phone: "phone",
+        ip: "ip / host",
+        custom: "custom tag",
+      }[source] || "mixed";
+
+      if (tab === "summary") {
+        resultsLabel.textContent = "summary view / simulated";
+        line("target", target + "  (" + srcLabel + ")", "accent");
+        line("confidence", "0.73 (simulated)", "accent");
+        line("risk_score", "medium‑high / ui‑only", "danger");
+        line("clusters", "3 pseudo‑profiles, 9 related identifiers, 4 pattern hints", "");
+        line(
+          "note",
+          "все совпадения и показатели сгенерированы в браузере и не отражают реальных данных.",
+          ""
+        );
+        resultsMeta.textContent = "records: 5";
+      } else if (tab === "identifiers") {
+        resultsLabel.textContent = "identifiers view / simulated";
+        line("primary", "@handle :: " + target, "accent");
+        line("emails", "2 synthetic entries linked", "");
+        line("phones", "1 masked pseudo‑number", "");
+        line(
+          "usernames",
+          "≈ 6 совпадений по паттерну (выдуманные, без запросов наружу).",
+          ""
+        );
+        line("ips", "random 3 pseudo‑addresses", "");
+        resultsMeta.textContent = "records: 5";
+      } else if (tab === "risk") {
+        resultsLabel.textContent = "risk surface / simulated";
+        line("exposure", "3 условно открытых канала, 1 утечка (фейк).", "danger");
+        line("social graph", "2 плотных кластера, 1 периферийный.", "");
+        line(
+          "weak points",
+          "публичные контакты, отсутствие сегрегации идентификаторов.",
+          ""
+        );
+        line(
+          "hint",
+          "в реальном инструменте сюда выводились бы рекомендации по снижению цифрового следа.",
+          ""
+        );
+        resultsMeta.textContent = "records: 4";
+      }
+    }
+
+    // Tabs
+    const tabButtons = Array.from(document.querySelectorAll(".tab"));
+    let activeTab = "summary";
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        activeTab = btn.dataset.tab;
+        tabButtons.forEach((b) => b.classList.toggle("active", b === btn));
+        renderResults(targetInput.value.trim(), sourceSelect.value, activeTab);
+      });
+    });
+
+    // Run button
+    runBtn.addEventListener("click", () => {
+      const target = targetInput.value.trim();
+      const source = sourceSelect.value;
+      if (!target) {
+        pushLog("warn", "empty target identifier, aborting mock sweep.");
+        renderResults("", source, activeTab);
+        return;
+      }
+
+      const srcLabel = {
+        username: "USERNAME",
+        email: "EMAIL",
+        phone: "PHONE",
+        ip: "IP",
+        custom: "CUSTOM",
+      }[source] || "MIXED";
+
+      pushLog("info", "enqueue sweep for target `" + target + "` [" + srcLabel + "].");
+      setStatus(1, 0.34 + Math.random() * 0.35, "medium");
+
+      runBtn.disabled = true;
+      runBtn.style.opacity = "0.8";
+
+      const fakeLatency = 200 + Math.random() * 650;
+
+      setTimeout(() => {
+        pushLog("ok", "mock engine resolved synthetic surface graph for `" + target + "`.");
+        setStatus(0, 0.12 + Math.random() * 0.2, "low");
+        renderResults(target, source, activeTab);
+        runBtn.disabled = false;
+        runBtn.style.opacity = "1";
+      }, fakeLatency);
+    });
+
+    // Initial status visuals
+    setStatus(0, 0.12, "low");
+  </script>
+</body>
+</html>
